@@ -4,8 +4,24 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene()
-const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+
+const geometry = new THREE.BufferGeometry()
+
+const count = 50
+const positionArray = new Float32Array(count * 3 * 3)
+
+for (let index = 0; index < count * 3 * 3; index++) {
+    positionArray[index] = (Math.random() - .5)*5
+    
+}
+
+const positionAttribute = new THREE.BufferAttribute(positionArray, 3)
+geometry.setAttribute('position', positionAttribute)
+
+const material = new THREE.MeshBasicMaterial({
+    color: 0x0000ff,
+    wireframe: true
+})
 const mesh = new THREE.Mesh(geometry, material)
 
 // sizes
@@ -84,6 +100,7 @@ const clock = new THREE.Clock()
 const tick = () => {
 
     const elapsedTime = clock.getElapsedTime()
+    // geometry.rotation.x = elapsedTime
 
     // update controls
     controls.update()
