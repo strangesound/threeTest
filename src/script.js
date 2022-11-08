@@ -7,10 +7,24 @@ const scene = new THREE.Scene()
 const geometry = new THREE.BoxGeometry()
 const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
+
+// sizes
 const sizes = {
-    width: 800,
-    height: 800
+    width: window.innerWidth,
+    height: window.innerHeight
 }
+
+window.addEventListener('resize', () => {
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+    renderer.setSize(sizes.width, sizes.height)
+
+})
+
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
 
 const cursor = {
@@ -21,17 +35,34 @@ const cursor = {
 window.addEventListener('mousemove', (e) => {
     cursor.x = -(e.clientX / sizes.width - 0.5)
     cursor.y = e.clientY / sizes.height - 0.5
-    // console.log(cursor.x);
+})
+
+window.addEventListener('dblclick', (e) => {
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+    if (!fullscreenElement) {
+
+        if (canvas.requestFullscreen) {
+            canvas.requestFullscreen()
+        }
+        else if (canvas.webkitRequestFullscreen) {
+            canvas.webkitRequestFullscreen()
+        }
+    }
+    else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen()
+        }
+        else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen()
+        }
+    }
+    // console.log('document.fullscreenElement');
+    // console.log(document.fullscreenElement);
 })
 
 
-// mesh.position.set(.7, -.6, 1)
-// mesh.scale.set(2, .5, .5)
-mesh.rotation.reorder('YXZ')
 
-// mesh.rotation.x = Math.PI * 0.25
-// mesh.rotation.y = Math.PI * .3
-// mesh.rotation.z = Math.PI * 2
+mesh.rotation.reorder('YXZ')
 
 scene.add(mesh)
 
@@ -40,8 +71,6 @@ scene.add(axesHelper)
 
 
 camera.position.z = 3
-// camera.position.x = 1
-// camera.position.y = 1
 scene.add.camera
 
 const canvas = document.querySelector('canvas.webgl')
@@ -55,11 +84,6 @@ const clock = new THREE.Clock()
 const tick = () => {
 
     const elapsedTime = clock.getElapsedTime()
-    // console.log(elapsedTime)
-    // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3
-    // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3
-    // camera.position.y = cursor.y * 5
-    // camera.lookAt(mesh.position)
 
     // update controls
     controls.update()
@@ -67,12 +91,13 @@ const tick = () => {
     window.requestAnimationFrame(tick)
 }
 
-// console.log(mesh.position.distanceTo(camera.position));
-
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
-    antialias:true
+    antialias: true
 
 })
 renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+
 tick()
